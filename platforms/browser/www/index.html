@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<script type="text/javascript" charset="utf-8" src="cordova-1.6.0.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+    var pictureSource;   // picture source
+    var destinationType; // sets the format of returned value
+
+    // Wait for Cordova to connect with the device
+    //
+    document.addEventListener("deviceready",onDeviceReady,false);
+
+    // Cordova is ready to be used!
+    //
+    function onDeviceReady() {
+        pictureSource=navigator.camera.PictureSourceType;
+        destinationType=navigator.camera.DestinationType;
+    }
+
+    // Called when a photo is successfully retrieved
+    //
+    function onPhotoDataSuccess(imageData) {
+
+        var smallImage = document.getElementById('smallImage');
+
+        smallImage.style.display = 'block';
+
+        smallImage.src = "data:image/jpeg;base64," + imageData;
+    }
+
+    // Called when a photo is successfully retrieved
+    //
+    function onPhotoURISuccess(imageURI) {
+
+        var smallImage = document.getElementById('smallImage');
+
+        smallImage.style.display = 'block';
+
+        smallImage.src = imageURI;
+    }
+
+    // A button will call this function
+    //
+    function capturePhoto() {
+        // Take picture using device camera and retrieve image as base64-encoded string
+        navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,
+            destinationType:destinationType.DATA_URL, cameraDirection: 0});
+    }
+
+    // A button will call this function
+    //
+    function getPhoto(source) {
+        // Retrieve image file location from specified source
+        navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50,
+            destinationType: destinationType.FILE_URI,
+            sourceType: source });
+    }
+
+    // Called if something bad happens.
+    //
+    function onFail(message) {
+        alert('Failed because: ' + message);
+    }
+
+</script>
+    <script type="text/javascript" charset="utf-8" src="cordova-1.8.1.js"></script>
+    <script type="text/javascript" charset="utf-8">
+
+        // Wait for Cordova to load
+        //
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        // Cordova is ready
+        //
+        function getLocation() {
+            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+        }
+
+        // onSuccess Geolocation
+        //
+        function onSuccess(position) {
+            document.getElementById("geolocation").innerHTML = 'Latitude: '           + position.coords.latitude  +'°<br />' +
+                'Longitude: '          + position.coords.longitude             + '°<br />';
+
+            document.getElementById("txtlongitude").value=position.coords.longitude;
+            document.getElementById("txtlatitude").value=position.coords.latitude;
+        }
+
+        // onError Callback receives a [PositionError](PositionError/positionError.html) object
+        //
+        function onError(error) {
+            alert('code: '    + error.code    + '\n' +
+                'message: ' + error.message + '\n');
+        }
+
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"/>
+    <title>ItemFind</title>
+    <style>
+        .spa { display: none; }
+        #tabInfo { display: block; }
+    </style>
+
+
+</head>
+<body class="grey lighten-5">
+<!-- Fixed navbar -->
+<div class="navbar-fixed">
+    <nav class="black">
+        <div class="nav-wrapper container"><a href="#!" class="brand-logo center">ItemFind</a>
+            <a href="#!" data-activates="nav-mobile" class="button-collapse show-on-large" ><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
+</div>
+<!-- Fixed sideNav -->
+<ul id="nav-mobile" class="side-nav">
+    <li><a href="#!" data-show="tabItemLijst"><i class="material-icons">find_in_page</i>Itemlijst</a></li>
+    <li>
+        <div class="divider"></div>
+    </li>
+    <li><a href="#!" data-show="tabAddItem"><i class="material-icons">add_box</i>Voeg item toe</a></li>
+    <li>
+        <div class="divider"></div>
+    </li>
+   <!--<li><a href="#!" data-show="tabSavedItems"><i class="material-icons">folder</i>Opgeslagen items</a></li>
+    <li>
+        <div class="divider"></div>
+    </li>-->
+    <li><a href="#!" data-show="tabInfo"><i class="material-icons">perm_device_information</i>Informatie</a></li>
+</ul>
+<!-- Grid -->
+<div class="container">
+
+    <div class="row spa" id="tabItem">
+        <div class="col s12">
+            <h4 id="itemnaam"></h4>
+            <img id="imgItem"/>
+            <p id="Itemlocatie"></p>
+            <input type="hidden" id="Itemid"/>
+            <!--<div class="fixed-action-btn">
+                <a class="btn-floating btn-large green" id="saveItem">
+                    <i class="large material-icons">save</i>
+                </a>
+            </div>-->
+        </div>
+    </div>
+
+    <div class="row spa" id="tabAddItem">
+        <div class="col s12">
+            <p><h4>Item naam</h4>
+            <input type="text" name="txtNaam" id="txtNaam"></p>
+            <p><h4>Item foto</h4></p>
+            <p>
+                <button onclick="capturePhoto();">Foto nemen</button> <button onclick="getPhoto(pictureSource.SAVEDPHOTOALBUM);">Foto selecteren uit album</button><br>
+                <img name="imgItem" style="display:none;width:150px;height:150px;" id="smallImage" src="" />
+            </p>
+            <p><h4>Item locatie</h4> </p>
+            <p><a onclick="getLocation();">Coördinaten toevoegen</a></p>
+            <p id="geolocation">Coördinaten worden gezocht...</p>
+            <input type="hidden" name="txtlongitude" value="" id="txtlongitude"/>
+            <input type="hidden" name="txtlatitude" value="" id="txtlatitude"/>
+            <div class="fixed-action-btn">
+                <button class="btn-floating btn-large green" id="addItem">
+                    <i class="large material-icons">note_add</i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row spa" id="tabItemLijst">
+        <div class="col s12">
+            <h4><i class="material-icons">shopping_cart</i> Opgeslagen Itemlijst</h4>
+            <table id="ItemListTabel" class="striped">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Naam</th>
+                    <th>locatie</th>
+                </tr>
+                </thead>
+                <tbody id="ItemList">
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="row spa" id="tabSavedItems">
+        <div class="col s12">
+            <h4><i class="material-icons">shopping_cart</i> Opgeslagen Itemlijst</h4>
+            <table id="SavedListTabel" class="striped">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Naam</th>
+                    <th>locatie</th>
+                </tr>
+                </thead>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="row spa" id="tabInfo">
+        <div class="col s12">
+            <h4><i class="material-icons">perm_device_information</i> Informatie</h4>
+            <p>Maarten Schroons</p>
+            <p>maartenschroons@hotmail.com</p>
+            <a href="tel:0497-12-57-15"  data-rel="external">0497/12 57 15</a>
+            <p>In deze app kan je via hints verschillende voorwerpen vinden die andere gebruikers verstopt hebben. Zelf kan je ook voorwerpen verstoppen en deze toevoegen.</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+<script src="cordova.js"></script>
+<script src="js/SavedItems.js"></script>
+<script defer src="js/app.js"></script>
+
+</body>
+</html>
